@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterprjgroup1/cartprovider.dart';
 import 'package:flutterprjgroup1/productlist.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => CartProvider(),
+    child: MyApp(),
+  )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,6 +26,7 @@ class MyApp extends StatelessWidget {
       onSurface: Colors.black87,
     );
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: "SnapBuy",
       theme: ThemeData(
         colorScheme: customColorScheme,

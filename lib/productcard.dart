@@ -62,19 +62,38 @@ class ProductCard extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${product.price.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber, size: 20),
+                          Text(' ${product.rating.rate} (${product.rating.count})'),
+                        ],
+                      ),
+                    ],
                   ),
+
                   const SizedBox(height: 8),
                   if (!isInCart)
-                    CupertinoButton.filled(
-                      onPressed: onAddToCart,
-                      child: const Text('Add to Cart'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CupertinoButton.filled(
+                            onPressed: onAddToCart,
+                            child: const Text('Add to Cart'),
+                          ),
+                        ),
+                      ],
                     )
+
                   else
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
