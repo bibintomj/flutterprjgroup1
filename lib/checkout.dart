@@ -200,11 +200,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              item.product.images.first,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
+                            child: Hero(
+                              tag: item.product.images.first,
+                              child: Image.asset(
+                                item.product.images.first,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -265,9 +268,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  _buildSummaryRow('Subtotal', subtotal),
-                  _buildSummaryRow('Tax (13%)', tax),
-                  _buildSummaryRow('Total', total, isTotal: true),
+                  _getSummaryRow('Subtotal', subtotal),
+                  _getSummaryRow('Tax (13%)', tax),
+                  _getSummaryRow('Total', total, isTotal: true),
                   const SizedBox(height: 24),
                   const Text(
                     'Shipping Information',
@@ -278,7 +281,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _nameController,
                           label: 'Full Name',
                           placeholder: 'John Doe',
@@ -289,7 +292,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       : null,
                         ),
                         const SizedBox(height: 12),
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _emailController,
                           label: 'Email',
                           placeholder: 'example@email.com',
@@ -301,7 +304,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       : null,
                         ),
                         const SizedBox(height: 12),
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _phoneController,
                           label: 'Phone Number',
                           placeholder: '5199999999',
@@ -314,7 +317,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       : null,
                         ),
                         const SizedBox(height: 12),
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _addressController,
                           label: 'Street Address',
                           placeholder: '299 Doon Valley Dr.',
@@ -398,7 +401,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _postalCodeController,
                           label: 'Postal Code',
                           placeholder: 'A1A 1A1',
@@ -419,7 +422,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        _buildCupertinoTextField(
+                        _getCupertinoTextField(
                           controller: _cardNumberController,
                           label: 'Card Number',
                           placeholder: '1234 5678 9012 3456',
@@ -437,7 +440,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: _buildCupertinoTextField(
+                              child: _getCupertinoTextField(
                                 controller: _expiryController,
                                 label: 'MM/YY',
                                 placeholder: '12/25',
@@ -455,7 +458,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: _buildCupertinoTextField(
+                              child: _getCupertinoTextField(
                                 controller: _cvvController,
                                 label: 'CVV',
                                 placeholder: '123',
@@ -477,18 +480,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
           ),
-          _buildBottomBar(total),
+          _getBottomBar(total),
         ],
       ),
     );
   }
 
-  Widget _buildCupertinoTextField({
+  Widget _getCupertinoTextField({
     required TextEditingController controller,
     required String label,
     required String placeholder,
@@ -523,7 +525,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
           style: const TextStyle(fontSize: 16),
           onChanged: (value) {
             if (validator != null) {
-              setState(() {}); // this is to force refresh so that error shows up
+              setState(
+                () {},
+              ); // this is to force refresh so that error shows up
             }
           },
         ),
@@ -566,7 +570,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         : CupertinoColors.lightBackgroundGray;
   }
 
-  Widget _buildSummaryRow(String label, double amount, {bool isTotal = false}) {
+  Widget _getSummaryRow(String label, double amount, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -589,7 +593,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildBottomBar(double total) {
+  Widget _getBottomBar(double total) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

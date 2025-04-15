@@ -43,10 +43,13 @@ class ProductCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(8),
                 ),
-                child: Image.network(
-                  product.images.first,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+                child: Hero(
+                  tag: product.images.first,
+                  child: Image(
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    image: AssetImage(product.images.first),
+                  ),
                 ),
               ),
             ),
@@ -75,7 +78,9 @@ class ProductCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(Icons.star, color: Colors.amber, size: 20),
-                          Text(' ${product.rating.rate} (${product.rating.count})'),
+                          Text(
+                            ' ${product.rating.rate} (${product.rating.count})',
+                          ),
                         ],
                       ),
                     ],
@@ -93,7 +98,6 @@ class ProductCard extends StatelessWidget {
                         ),
                       ],
                     )
-
                   else
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

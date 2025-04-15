@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutterprjgroup1/cartprovider.dart';
 import 'package:flutterprjgroup1/productlist.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => CartProvider(),
-    child: MyApp(),
-  )
+  runApp(
+    ChangeNotifierProvider(create: (context) => CartProvider(), child: MyApp()),
   );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     ColorScheme customColorScheme = const ColorScheme.light(
@@ -50,10 +48,7 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          bodyLarge: TextStyle(fontSize: 16, color: Colors.black87),
         ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(),
@@ -69,35 +64,67 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  double _calculateScale(double value) {
+    double scaleFactor = math.sin(value * 2 * math.pi);
+    return 1.0 + (scaleFactor * 0.05);
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image(
-              width: 300,
-              height: 150,
-              image: AssetImage("images/logo.png"),
+            Hero(
+              tag: "logo",
+              child: Image(
+                width: 300,
+                height: 150,
+                image: AssetImage("images/logo.png"),
+              ),
             ),
-            CupertinoButton.filled(
-              child: const Text("Get Started"),
-              onPressed:
-                  () => {
-                    Navigator.push(context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductList()
-                        )
-                    )
-                  },
+            const SizedBox(height: 24),
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _calculateScale(_animationController.value),
+                  child: CupertinoButton.filled(
+                    child: const Text("Get Started"),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProductList()),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ],
         ),

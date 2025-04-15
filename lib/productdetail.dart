@@ -87,9 +87,12 @@ class _ProductDetailState extends State<ProductDetail> {
                       });
                     },
                     itemBuilder: (context, index) {
-                      return Image(
-                        image: AssetImage(widget.product.images[index]),
-                        fit: BoxFit.cover,
+                      return Hero(
+                        tag: widget.product.images[index],
+                        child: Image(
+                          image: AssetImage(widget.product.images[index]),
+                          fit: BoxFit.cover,
+                        ),
                       );
                     },
                   ),

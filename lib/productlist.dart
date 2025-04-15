@@ -24,7 +24,10 @@ class _ProductListState extends State<ProductList> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Image.asset('images/logo.png', height: 30),
+        title: Hero(
+          tag: "logo",
+          child: Image.asset('images/logo.png', height: 30),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         centerTitle: true,
         actions: [
