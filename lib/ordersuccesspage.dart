@@ -27,13 +27,13 @@ class OrderSuccessPage extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             CupertinoButton.filled(
-              onPressed:
-                  () => Navigator.popUntil(context, ModalRoute.withName('/')),
-              child: const Text('Continue Shopping'),
+                onPressed: () => Navigator.popUntil(context, (route) => route.settings.name == 'ProductList'),
+                child: const Text('Continue Shopping'),
             ),
           ],
         ),
       ),
     );
   }
+
 }

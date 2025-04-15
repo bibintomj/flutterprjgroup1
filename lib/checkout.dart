@@ -63,19 +63,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   bool _validateCreditCardExpiry(String value) {
-    final regex = RegExp(r'^(0[1-9]|1[0-2])\/?([0-9]{2})$');
-    if (!regex.hasMatch(value)) return false;
+    if (value.length != 5 || value[2] != '/') return false;
 
-    final parts = value.split('/');
-    final month = int.parse(parts[0]);
-    final year = int.parse('20${parts[1]}');
+    try {
+      final month = int.parse(value.substring(0, 2));
+      final year = int.parse(value.substring(3));
 
-    final now = DateTime.now();
-    final currentYear = now.year;
-    final currentMonth = now.month;
+      if (month < 1 || month > 12) return false;
 
-    return (year > currentYear) ||
-        (year == currentYear && month >= currentMonth);
+      final now = DateTime.now();
+      final currentYear = now.year % 100;
+      final currentMonth = now.month;
+
+      if (year > currentYear) {
+        return true;
+      } else if (year == currentYear && month >= currentMonth) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   void _showRemoveConfirmation(Product product) {
@@ -133,7 +141,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
 
-    // placing order if validation passes.
     CartProvider cartProvider = Provider.of<CartProvider>(
       context,
       listen: false,
@@ -152,7 +159,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.cartItems;
 
-    // if cart is empty show empty message to user.
     if (cartItems.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Checkout')),
@@ -284,7 +290,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         _getCupertinoTextField(
                           controller: _nameController,
                           label: 'Full Name',
-                          placeholder: 'John Doe',
+                          placeholder: 'eg. Bibin Joseph',
                           validator:
                               (value) =>
                                   value!.isEmpty
@@ -431,8 +437,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           validator:
                               (value) =>
                                   value!.isEmpty ||
-                                          value.length != 19 ||
-                                          !RegExp(r'^[0-9 ]+$').hasMatch(value)
+                                          value.length != 16 ||
+                                          !RegExp(r'^[0-9]+$').hasMatch(value)
                                       ? 'Please enter a valid 16-digit card number'
                                       : null,
                         ),
@@ -527,7 +533,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             if (validator != null) {
               setState(
                 () {},
-              ); // this is to force refresh so that error shows up
+              );
             }
           },
         ),

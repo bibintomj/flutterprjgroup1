@@ -2,23 +2,71 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterprjgroup1/product.dart';
 import 'package:flutterprjgroup1/productdetail.dart';
+import 'package:flutterprjgroup1/checkout.dart';
 
-class ProductCard extends StatelessWidget {
-  Product product;
-  VoidCallback onAddToCart;
-  VoidCallback onIncrease;
-  VoidCallback onDecrease;
-  bool isInCart;
-  int quantity;
+class ProductCard extends StatefulWidget {
+  final Product product;
+  final VoidCallback onAddToCart;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
+  final bool isInCart;
+  final int quantity;
 
   ProductCard(
-    this.product,
-    this.onAddToCart,
-    this.onIncrease,
-    this.onDecrease,
-    this.isInCart,
-    this.quantity,
-  );
+      this.product,
+      this.onAddToCart,
+      this.onIncrease,
+      this.onDecrease,
+      this.isInCart,
+      this.quantity, {
+        Key? key,
+      }) : super(key: key);
+
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    // Start with the correct state
+    if (widget.isInCart) {
+      _animationController.value = 1.0;
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProductCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isInCart != oldWidget.isInCart) {
+      if (widget.isInCart) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +79,7 @@ class ProductCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductDetail(product: product),
+              builder: (context) => ProductDetail(product: widget.product),
             ),
           );
         },
@@ -44,11 +92,11 @@ class ProductCard extends StatelessWidget {
                   top: Radius.circular(8),
                 ),
                 child: Hero(
-                  tag: product.images.first,
+                  tag: widget.product.images.first,
                   child: Image(
                     fit: BoxFit.cover,
                     width: double.infinity,
-                    image: AssetImage(product.images.first),
+                    image: AssetImage(widget.product.images.first),
                   ),
                 ),
               ),
@@ -59,7 +107,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.title,
+                    widget.product.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -69,7 +117,7 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${product.price.toStringAsFixed(2)}',
+                        '\$${widget.product.price.toStringAsFixed(2)}',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
@@ -79,40 +127,71 @@ class ProductCard extends StatelessWidget {
                         children: [
                           Icon(Icons.star, color: Colors.amber, size: 20),
                           Text(
-                            ' ${product.rating.rate} (${product.rating.count})',
+                            ' ${widget.product.rating.rate} (${widget.product.rating.count})',
                           ),
                         ],
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 8),
-                  if (!isInCart)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CupertinoButton.filled(
-                            onPressed: onAddToCart,
-                            child: const Text('Add to Cart'),
+                  // Animated transition between buttons and quantity counter
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Add to Cart/Buy Now buttons
+                          Opacity(
+                            opacity: 1.0 - _opacityAnimation.value,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CupertinoButton.filled(
+                                    onPressed: widget.onAddToCart,
+                                    child: const Text('Add to Cart'),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: CupertinoButton.filled(
+                                    onPressed: () {
+                                      widget.onAddToCart();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CheckoutPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('Buy Now'),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  else
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CupertinoButton.filled(
-                          onPressed: onDecrease,
-                          child: const Icon(Icons.remove),
-                        ),
-                        Text(quantity.toString()),
-                        CupertinoButton.filled(
-                          onPressed: onIncrease,
-                          child: const Icon(Icons.add),
-                        ),
-                      ],
-                    ),
+                          // Quantity counter
+                          Opacity(
+                            opacity: _opacityAnimation.value,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CupertinoButton.filled(
+                                  onPressed: widget.onDecrease,
+                                  child: const Icon(Icons.remove),
+                                ),
+                                Text(widget.quantity.toString()),
+                                CupertinoButton.filled(
+                                  onPressed: widget.onIncrease,
+                                  child: const Icon(Icons.add),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

@@ -71,6 +71,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
@@ -80,6 +81,11 @@ class _MyHomePageState extends State<MyHomePage>
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat();
+
+    _rotationAnimation = Tween<double>(
+      begin: 0,
+      end: 2 * math.pi,
+    ).animate(_animationController);
   }
 
   @override
@@ -100,13 +106,44 @@ class _MyHomePageState extends State<MyHomePage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Hero(
-              tag: "logo",
-              child: Image(
-                width: 300,
-                height: 150,
-                image: AssetImage("images/logo.png"),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedBuilder(
+                  animation: _rotationAnimation,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _rotationAnimation.value,
+                      child: Text(
+                        '⭐️   ',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 25),
+                Hero(
+                  tag: "logo",
+                  child: Image(
+                    width: 300,
+                    height: 150,
+                    image: AssetImage("images/logo.png"),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                AnimatedBuilder(
+                  animation: _rotationAnimation,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _rotationAnimation.value,
+                      child: Text(
+                        '   ⭐️',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             AnimatedBuilder(
@@ -119,7 +156,10 @@ class _MyHomePageState extends State<MyHomePage>
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ProductList()),
+                        MaterialPageRoute(
+                            builder: (context) => ProductList(),
+                            settings: RouteSettings(name: 'ProductList'),
+                      ),
                       );
                     },
                   ),
