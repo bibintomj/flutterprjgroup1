@@ -44,7 +44,6 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
       ),
     );
 
-    // Start with the correct state
     if (widget.isInCart) {
       _animationController.value = 1.0;
     }
@@ -150,14 +149,12 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Animated transition between buttons and quantity counter
                   AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {
                       return Stack(
                         alignment: Alignment.center,
                         children: [
-                          // Add to Cart/Buy Now buttons
                           Opacity(
                             opacity: 1.0 - _opacityAnimation.value,
                             child: Row(
@@ -196,7 +193,6 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                               ],
                             ),
                           ),
-                          // Quantity counter
                           Opacity(
                             opacity: _opacityAnimation.value,
                             child: Row(
