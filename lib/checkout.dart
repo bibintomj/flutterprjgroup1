@@ -57,6 +57,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.dispose();
   }
 
+  void _showMaxQuantityAlert() {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('Limit reached'),
+        content: const Text('You can only add up to 10 items.'),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   bool _validateCanadianPostalCode(String value) {
     final regex = RegExp(r'^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$');
     return regex.hasMatch(value);
@@ -257,13 +273,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               Text(item.quantity.toString()),
                               IconButton(
                                 icon: const Icon(Icons.add),
-                                onPressed:
-                                    () => cartProvider.increaseQuantity(
-                                      item.product,
-                                    ),
+                                onPressed: () {
+                                  if (item.quantity >= 10) {
+                                    _showMaxQuantityAlert();
+                                  } else {
+                                    cartProvider.increaseQuantity(item.product);
+                                  }
+                                },
                               ),
                             ],
                           ),
+
                         ],
                       );
                     },
