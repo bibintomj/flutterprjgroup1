@@ -53,7 +53,7 @@ class _ProductListState extends State<ProductList> {
         ),
         itemCount: cartProvider.allProducts.length,
         itemBuilder: (context, index) {
-          final product = cartProvider.allProducts[index];
+          Product product = cartProvider.allProducts[index];
           final isInCart = cartProvider.isInCart(product);
           final quantity = cartProvider.getQuantity(product);
 
