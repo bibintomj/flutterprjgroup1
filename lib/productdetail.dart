@@ -31,6 +31,22 @@ class _ProductDetailState extends State<ProductDetail> {
     super.dispose();
   }
 
+  void _showMaxQuantityAlert() {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('Limit reached'),
+        content: const Text('You can only add up to 10 items.'),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _startAutoCarousel() {
     Future.delayed(const Duration(seconds: 3), () {
       if (_pageController.hasClients) {
@@ -167,7 +183,13 @@ class _ProductDetailState extends State<ProductDetail> {
                     SizedBox(
                       width: double.infinity,
                       child: CupertinoButton.filled(
-                        onPressed: () => cartProvider.addToCart(widget.product),
+                        onPressed: () {
+                          if (quantity >= 10) {
+                            _showMaxQuantityAlert();
+                          } else {
+                            cartProvider.addToCart(widget.product);
+                          }
+                        },
                         child: const Text('Add to Cart'),
                       ),
                     )
@@ -186,9 +208,13 @@ class _ProductDetailState extends State<ProductDetail> {
                           style: TextStyle(fontSize: 18),
                         ),
                         CupertinoButton.filled(
-                          onPressed:
-                              () =>
-                                  cartProvider.increaseQuantity(widget.product),
+                          onPressed: () {
+                            if (quantity >= 10) {
+                              _showMaxQuantityAlert();
+                            } else {
+                              cartProvider.increaseQuantity(widget.product);
+                            }
+                          },
                           child: const Icon(Icons.add),
                         ),
                       ],

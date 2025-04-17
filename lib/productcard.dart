@@ -68,6 +68,22 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
     super.dispose();
   }
 
+  void _showMaxQuantityAlert() {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: const Text('Limit reached'),
+        content: const Text('You can only add up to 10 items.'),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -148,7 +164,13 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                               children: [
                                 Expanded(
                                   child: CupertinoButton.filled(
-                                    onPressed: widget.onAddToCart,
+                                    onPressed: () {
+                                      if (widget.quantity >= 10) {
+                                        _showMaxQuantityAlert();
+                                      } else {
+                                        widget.onAddToCart();
+                                      }
+                                    },
                                     child: const Text('Add to Cart'),
                                   ),
                                 ),
@@ -156,13 +178,17 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                                 Expanded(
                                   child: CupertinoButton.filled(
                                     onPressed: () {
-                                      widget.onAddToCart();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => CheckoutPage(),
-                                        ),
-                                      );
+                                      if (widget.quantity >= 10) {
+                                        _showMaxQuantityAlert();
+                                      } else {
+                                        widget.onAddToCart();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => CheckoutPage(),
+                                          ),
+                                        );
+                                      }
                                     },
                                     child: const Text('Buy Now'),
                                   ),
@@ -182,7 +208,13 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                                 ),
                                 Text(widget.quantity.toString()),
                                 CupertinoButton.filled(
-                                  onPressed: widget.onIncrease,
+                                  onPressed: () {
+                                    if (widget.quantity >= 10) {
+                                      _showMaxQuantityAlert();
+                                    } else {
+                                      widget.onIncrease();
+                                    }
+                                  },
                                   child: const Icon(Icons.add),
                                 ),
                               ],
